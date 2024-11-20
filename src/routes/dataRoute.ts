@@ -1,27 +1,26 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+
+import { UserData } from '@/data/models';
+import { verifyToken } from '@/utils';
+import { DecodedAuth } from '@/types';
+import { CustomError } from '@/errorTypes';
+
 const router = express.Router();
-import jwt from 'jsonwebtoken';
-import { UserData } from '../data/models';
 
-const SECRET_KEY = 'key';
+router.get(`/get-data`, async (req: Request, res: Response) => {
+    const authToken: string | null = req.cookies.authToken;
+    if (!authToken)  {
+      return res.status(401).json({ data: null, message: 'Not Signed In.' })
+    }
 
-interface DecodedProps {
-  userId: string
-}
-
-router.get(`/get-data`, async (req, res) => {
+    const decoded = await verifyToken(authToken);
+    const { userId } = decoded as DecodedAuth;
   try {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).send('Access denied');
-
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const userId = (decoded as DecodedProps).userId;
     const userData = await UserData.find({ _id: userId });
-    res.json({ data: userData, message: 'Data get successfully'});
+    return res.json({ data: userData, message: 'Data get successfully'});
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' })
+    throw new CustomError(500, 'Database Error')
   }
-});
+}); 
 
 export default router;

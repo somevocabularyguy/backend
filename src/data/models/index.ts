@@ -1,5 +1,5 @@
 import User from './User';
 import UserData from './UserData';
-import Word from './Word';
+import Feedback from './Feedback';
 
-export { User, UserData, Word };
+export { User, UserData, Feedback };

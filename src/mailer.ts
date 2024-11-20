@@ -1,9 +1,7 @@
-import * as dotenv from 'dotenv';
 import Mailgun from 'mailgun.js';
 import formData from 'form-data';
 import { generateMagicLink } from './utils';
-
-dotenv.config();
+import { CustomError } from '@/errorTypes';
 
 const mailgun = new Mailgun(formData);
 const client = mailgun.client({
@@ -23,7 +21,7 @@ const sendMagicLinkEmail = async (email: string) => {
   This link is valid for the next 24 hours. If you didn't request this email, you can safely ignore it.
 
   Thank you,
-  By somevocabulary.com`;
+  By ${process.env.APP_DOMAIN as string}`;
 
   const messageHtml = `
     <p>Hi,</p>
@@ -31,26 +29,23 @@ const sendMagicLinkEmail = async (email: string) => {
     <a href=${magicLink} style="padding: 10px 20px; color: white; background-color: #007bff; text-decoration: none; border-radius: 5px;">Sign In</a>
     <p>This link is valid for the next 24 hours. If you didn't request this email, you can safely ignore it.</p>
     <p>Thank you,</p>
-    <p>By somevocabulary.com</p>`;
+    <p>By ${process.env.APP_DOMAIN as string}</p>`;
 
   const messageData = {
-    from: 'noreply@somevocabulary.com',
-    to: 'mks1601junkemail@gmail.com',
+    from: `noreply@${process.env.MAILGUN_DOMAIN as string}`,
+    to: email,
     subject: 'Your Sign In Link',
     text: messageText,
-    html: messageHtml
+    // html: messageHtml
   };
 
   try {
-    const response = await client.messages.create(process.env.BASE_DOMAIN as string, messageData);
-    console.log('Magic link sent:', response);
+    const response = await client.messages.create(process.env.MAILGUN_DOMAIN as string, messageData);
+    return response;
   } catch (error) {
-    console.error('Error sending magic link:', error);
+    throw new CustomError(500, 'Mailgun Error!')
   }
 }
-
-sendMagicLinkEmail('')
-
 
 export { sendMagicLinkEmail };
 
