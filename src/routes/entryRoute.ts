@@ -43,7 +43,7 @@ router.get('/verify', async (req: Request, res: Response) => {
 
       const authToken = generateToken({ userId })
 
-      res.cookie('authToken', authToken, { 
+      res.cookie('authCookie', authToken, { 
         httpOnly: true, 
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict'

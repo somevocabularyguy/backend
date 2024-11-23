@@ -8,12 +8,15 @@ import { verifyToken } from '@/utils';
 const router = express.Router();
 
 router.post('/send-feedback', async (req: Request, res: Response) => {
-  const { feedbackData } = req.body as { feedbackData: FeedbackData };
-  const authToken: string | null = req.cookies.authToken;
+  const feedbackData = req.body.feedbackData as FeedbackData;
 
-  let id = null;
+  const authHeader = req.headers.authorization;
+  console.log("🚀 ~ file: feedbackRoute.ts:45 ~ authHeader:", authHeader);
 
-  if (authToken)  {
+  let id: string | null = null;
+  if (authHeader) {
+    const authToken = authHeader.split(' ')[1];
+    console.log("🚀 ~ file: feedbackRoute.ts:17 ~ authToken:", authToken);
     const decoded = await verifyToken(authToken);
     const { userId } = decoded as DecodedAuth;
     id = userId;
@@ -35,7 +38,7 @@ router.post('/send-feedback', async (req: Request, res: Response) => {
       files,
       anonymous: !userId
     });
-
+    console.log('Success')
     res.status(201).json({ message: 'Feedback submitted successfully.' })
   } catch (error) {
     throw new CustomError(500, 'MongoDB Create Error.')
