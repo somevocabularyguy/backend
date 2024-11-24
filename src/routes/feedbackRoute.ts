@@ -11,12 +11,10 @@ router.post('/send-feedback', async (req: Request, res: Response) => {
   const feedbackData = req.body.feedbackData as FeedbackData;
 
   const authHeader = req.headers.authorization;
-  console.log("🚀 ~ file: feedbackRoute.ts:45 ~ authHeader:", authHeader);
 
   let id: string | null = null;
   if (authHeader) {
     const authToken = authHeader.split(' ')[1];
-    console.log("🚀 ~ file: feedbackRoute.ts:17 ~ authToken:", authToken);
     const decoded = await verifyToken(authToken);
     const { userId } = decoded as DecodedAuth;
     id = userId;
@@ -38,7 +36,7 @@ router.post('/send-feedback', async (req: Request, res: Response) => {
       files,
       anonymous: !userId
     });
-    console.log('Success')
+    console.log('Feedback Successfully Saved')
     res.status(201).json({ message: 'Feedback submitted successfully.' })
   } catch (error) {
     throw new CustomError(500, 'MongoDB Create Error.')

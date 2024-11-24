@@ -19,7 +19,6 @@ router.get(`/get-data`, async (req: Request, res: Response) => {
     const { userId } = decoded as DecodedAuth;
   try {
     const userData = await UserData.findOne({ userId: userId });
-    console.log("🚀 ~ file: dataRoute.ts:22 ~ userData:", userData);
     return res.json(userData)
   } catch (error) {
     throw new CustomError(500, 'Database Error')

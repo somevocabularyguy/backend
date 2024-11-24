@@ -5,6 +5,8 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
+import '@/cronJob'; //Todo: Will be activated.
+
 dotenv.config()
 
 mongoose.connect(process.env.MONGO_URI as string)

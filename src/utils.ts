@@ -2,7 +2,7 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import { CustomError } from '@/errorTypes';
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY as string;
-const SERVER_URL = process.env.SERVER_URL as string;
+const APP_URL = process.env.APP_URL as string;
 
 const generateToken = (payload: Record<string, any>, expiresIn?: string | number) => {
   const options: SignOptions = {};
@@ -36,9 +36,8 @@ const isEmail = (email: string) => {
 
 const generateMagicLink = (email: string): string => {
   const signInToken = generateToken({ email }, '24h')
-  const magicLink = `${SERVER_URL}/entry/verify?signInToken=${signInToken}`;
+  const magicLink = `${APP_URL}/api/proxy/entry/verify?signInToken=${signInToken}`;
   return magicLink;
 }
-
 
 export { generateToken, verifyToken, isEmail, generateMagicLink };
