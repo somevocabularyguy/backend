@@ -3,17 +3,21 @@ import mongoose from 'mongoose';
 const userDataSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   totalUseTime: { type: Number, default: 0},
+  languageArray: [String],
   hiddenWordIds: [String],
   customWordIds: [String],
-  wordsData: [{
-    wordId: { type: String, required: true },
-    notShownTimeSpent: { type: Number },
-    shownTimeSpent: { type: Number },
-    notShownSeen: { type: Number },
-    shownSeen: { type: Number },
-    lastViewed: { type: Number },
-    learningScore: { type: Number }
-  }],
+  wordsData: [
+    {
+      _id: false,
+      id: { type: String, required: true },
+      notShownTimeSpent: { type: Number },
+      shownTimeSpent: { type: Number },
+      notShownSeen: { type: Number },
+      shownSeen: { type: Number },
+      lastViewed: { type: Number },
+      learningScore: { type: Number }
+    }
+  ],
 }, {
   toJSON: {
     transform(doc, ret) {

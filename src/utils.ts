@@ -1,5 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { CustomError } from '@/errorTypes';
+import { UserDataType } from '@/types';
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY as string;
 const APP_URL = process.env.APP_URL as string;
@@ -36,8 +37,61 @@ const isEmail = (email: string) => {
 
 const generateMagicLink = (email: string): string => {
   const signInToken = generateToken({ email }, '24h')
-  const magicLink = `${APP_URL}/api/proxy/entry/verify?signInToken=${signInToken}`;
+  const magicLink = `${APP_URL}/api/web/proxy/entry/verify-magic-link?signInToken=${signInToken}`;
   return magicLink;
 }
 
-export { generateToken, verifyToken, isEmail, generateMagicLink };
+const checkIfExpired = (expirationDate: number) => {
+  const currentTime = Date.now();
+  return expirationDate < currentTime;
+};
+
+const base64UrlDecode = (string: string) => {
+  const base64 = string.replace(/-/g, '+').replace(/_/g, '/');
+  const decoded = Buffer.from(base64, 'base64').toString('utf8');
+  return JSON.parse(decoded);
+};
+
+const isTokenExpired = (token: string) => {
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    return true;
+  }
+
+  const payload = base64UrlDecode(parts[1]);
+  const currentTime = Math.floor(Date.now() / 1000);
+  return payload.exp < currentTime;
+};
+
+const compareUserData = (clientUseTime?: number | null, serverUseTime?: number | null) => {
+  if (!clientUseTime) return 'server';
+  if (!serverUseTime) return 'client';
+  if (clientUseTime >= serverUseTime) {
+    return 'client';
+  } else {
+    return 'server';
+  }
+}
+
+function filterToUserDataType(data: Record<string, any>): UserDataType {
+  // Extract only the keys that exist in UserDataType
+  const allowedKeys: (keyof UserDataType)[] = [
+    'totalUseTime',
+    'languageArray',
+    'hiddenWordIds',
+    'customWordIds',
+    'wordsData',
+  ];
+
+  const filteredData = {} as UserDataType;
+
+  for (const key of allowedKeys) {
+    if (key in data) {
+      filteredData[key] = data[key];
+    }
+  }
+
+  return filteredData;
+}
+
+export { generateToken, verifyToken, isEmail, generateMagicLink, checkIfExpired, isTokenExpired, compareUserData, filterToUserDataType };
