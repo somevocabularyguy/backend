@@ -41,8 +41,10 @@ const sendMagicLinkEmail = async (email: string) => {
 
   try {
     const response = await client.messages.create(process.env.MAILGUN_DOMAIN as string, messageData);
+    console.log("🚀 ~ file: mailer.ts:44 ~ response:", response);
     return response;
   } catch (error) {
+    console.log("🚀 ~ file: mailer.ts:47 ~ error:", error);
     throw new CustomError(500, 'Mailgun Error!')
   }
 }

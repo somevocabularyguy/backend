@@ -1,7 +1,6 @@
 import cron from 'node-cron';
-import { UserDeletion, User } from '@/data/models';
+import { UserDeletion, User, WaitingVerify } from '@/data/models';
 import { incrementDeletionCount } from '@/databaseUtils';
-
 
 cron.schedule('0 0 * * *', async () => {
   try {
@@ -25,5 +24,21 @@ cron.schedule('0 0 * * *', async () => {
     }
   } catch (error) {
     console.error('Error occurred while deleting users:', error);
+  }
+
+  try {
+    const tokensToDelete = await WaitingVerify.find({ expiresAt: { $lte: new Date() } });
+
+    if (tokensToDelete.length > 0) {
+      console.log(`Found ${tokensToDelete.length} expired tokens for deletion.`);
+
+      for (let verifyToken of tokensToDelete) {
+        await WaitingVerify.findOneAndDelete(verifyToken._id);
+      }
+    } else {
+      console.log('No expired tokens to delete.');
+    }
+  } catch (error) {
+    console.error('Error occurred while deleting expired tokens:', error);
   }
 });

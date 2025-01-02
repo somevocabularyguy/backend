@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
-import '@/cronJob'; //Todo: Will be activated.
+// import '@/cronJob'; //Todo: Will be activated.
 
 dotenv.config()
 
@@ -17,13 +17,13 @@ const app = express();
 const port = 5000;
 
 const corsOptions = {
-  origin: process.env.APP_URL,
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(bodyParser.json());
+app.use(express.json({ limit: '1mb' }));
+app.use(bodyParser.json({ limit: '1mb' }));
 app.use(cookieParser());
 
 import dataRoute from '@/routes/dataRoute';
@@ -38,5 +38,5 @@ import { errorHandler } from '@/middleware';
 app.use(errorHandler)
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://backend:${port}`);
 });
