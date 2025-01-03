@@ -48,6 +48,7 @@ router.post(`/sync-user-data`, async (req: Request, res: Response) => {
   try {
     let serverUserData: UserDataType | null = null;
     let serverUseTimeObject = await UserData.findOne({ userId: userId }).select('totalUseTime -_id') as { totalUseTime: number } | null;
+    console.log("🚀 ~ file: dataRoute.ts:51 ~ serverUseTimeObject:", serverUseTimeObject);
     if (!serverUseTimeObject) {
       const user = await User.findById(userId);
       if (user) {
