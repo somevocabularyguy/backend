@@ -60,8 +60,11 @@ router.post(`/sync-user-data`, async (req: Request, res: Response) => {
     console.log("🚀 ~ file: dataRoute.ts:52 ~ truth:", truth);
     if (truth === 'server') {
       if (!serverUserData) {
-        serverUserData = await UserData.findOne({ userId: userId }) as UserDataType | null;
-        console.log("🚀 ~ file: dataRoute.ts:64 ~ serverUserData:", serverUserData);
+        const rawUserData = await UserData.findOne({ userId: userId })
+        if (rawUserData) {
+          serverUserData = filterToUserDataType(rawUserData);
+          console.log("🚀 ~ file: dataRoute.ts:64 ~ serverUserData:", serverUserData);
+        }
       }
       return res.status(200).json({ serverUserData });
     } else if (truth === 'client' && clientUserData) {

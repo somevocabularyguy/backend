@@ -74,7 +74,7 @@ const compareUserData = (clientUseTime?: number | null, serverUseTime?: number |
   }
 }
 
-function filterToUserDataType(data: Record<string, any>): UserDataType {
+const filterToUserDataType = (data: Record<string, any>): UserDataType => {
   // Extract only the keys that exist in UserDataType
   const allowedKeys: (keyof UserDataType)[] = [
     'totalUseTime',
