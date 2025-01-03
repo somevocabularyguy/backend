@@ -3,7 +3,7 @@ import { CustomError } from '@/errorTypes';
 import { UserDataType } from '@/types';
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY as string;
-const APP_URL = process.env.APP_URL as string;
+const FRONTEND_URL = process.env.FRONTEND_URL as string;
 
 const generateToken = (payload: Record<string, any>, expiresIn?: string | number) => {
   const options: SignOptions = {};
@@ -37,7 +37,8 @@ const isEmail = (email: string) => {
 
 const generateMagicLink = (email: string): string => {
   const signInToken = generateToken({ email }, '24h')
-  const magicLink = `${APP_URL}/api/web/proxy/entry/verify-magic-link?signInToken=${signInToken}`;
+  console.log("🚀 ~ file: utils.ts:42 ~ FRONTEND_URL:", FRONTEND_URL);
+  const magicLink = `${FRONTEND_URL}/api/web/proxy/entry/verify-magic-link?signInToken=${signInToken}`;
   return magicLink;
 }
 

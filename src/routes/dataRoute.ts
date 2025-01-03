@@ -10,15 +10,19 @@ const router = express.Router();
 router.get(`/get-user-data`, async (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
     const authToken = authHeader?.split(' ')[1];
+    console.log("🚀 ~ file: dataRoute.ts:13 ~ authToken:", authToken);
 
     if (!authToken)  {
       return res.status(401).json(null)
     }
 
     const decoded = await verifyToken(authToken);
+    console.log("🚀 ~ file: dataRoute.ts:20 ~ decoded:", decoded);
     const { userId } = decoded as DecodedAuth;
+    console.log("🚀 ~ file: dataRoute.ts:22 ~ userId:", userId);
   try {
     const userData = await UserData.findOne({ userId: userId });
+    console.log("🚀 ~ file: dataRoute.ts:25 ~ userData:", userData);
     // if userdata is null, delete the token.
     return res.json(userData)
   } catch (error) {
@@ -29,14 +33,17 @@ router.get(`/get-user-data`, async (req: Request, res: Response) => {
 router.post(`/sync-user-data`, async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const authToken = authHeader?.split(' ')[1];
+  console.log("🚀 ~ file: dataRoute.ts:36 ~ authToken:", authToken);
 
   if (!authToken)  {
     return res.status(401).json(null)
   }
   const decoded = await verifyToken(authToken);
+  console.log("🚀 ~ file: dataRoute.ts:42 ~ decoded:", decoded);
   const { userId } = decoded as DecodedAuth;
 
   const { clientUserData } = req.body as { clientUserData: UserDataType | null };
+  console.log("🚀 ~ file: dataRoute.ts:46 ~ clientUserData:", clientUserData);
 
   try {
     let serverUserData: UserDataType | null = null;
@@ -54,6 +61,7 @@ router.post(`/sync-user-data`, async (req: Request, res: Response) => {
     if (truth === 'server') {
       if (!serverUserData) {
         serverUserData = await UserData.findOne({ userId: userId }) as UserDataType | null;
+        console.log("🚀 ~ file: dataRoute.ts:64 ~ serverUserData:", serverUserData);
       }
       return res.status(200).json({ serverUserData });
     } else if (truth === 'client' && clientUserData) {
@@ -61,6 +69,7 @@ router.post(`/sync-user-data`, async (req: Request, res: Response) => {
       await UserData.updateOne({ userId: userId }, { $set: clientUserData })
     }
   } catch (error) {
+    console.log("🚀 ~ file: dataRoute.ts:72 ~ error:", error);
     throw new CustomError(500, 'Database Error')
   }
 }); 

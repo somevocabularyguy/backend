@@ -46,6 +46,7 @@ router.get('/verify-magic-link', async (req: Request, res: Response) => {
       const { email } = decoded as DecodedSignIn;
       console.log("🚀 ~ file: entryRoute.ts:47 ~ email:", email);
       const isWaiting = await WaitingVerify.findOne({ email: email })
+      console.log("🚀 ~ file: entryRoute.ts:49 ~ isWaiting:", isWaiting);
 
       if (!isWaiting) return res.status(401).json('No Entry.');
       if (isWaiting.verified) return res.status(200).json('Verified')
@@ -53,6 +54,7 @@ router.get('/verify-magic-link', async (req: Request, res: Response) => {
       await WaitingVerify.updateOne({ email: email }, { $set: { verified: true }})
 
       const existingUser = await User.findOne({ email: email })
+      console.log("🚀 ~ file: entryRoute.ts:57 ~ existingUser:", existingUser);
 
       if (!existingUser) {
         await User.create({ email: email });
@@ -64,7 +66,7 @@ router.get('/verify-magic-link', async (req: Request, res: Response) => {
       }
       res.status(200).json('Verified');
     } catch (error) {
-      console.error(error)
+      console.log("🚀 ~ file: entryRoute.ts:69 ~ error:", error);
       throw new CustomError(500, 'Database error')
     }
   }
@@ -82,6 +84,7 @@ router.get('/verify-sign-in', async (req: Request, res: Response) => {
   const decoded: jwt.JwtPayload = await verifyToken(tempVerifyToken);
   console.log("🚀 ~ file: entryRoute.ts:83 ~ decoded:", decoded);
   const { email } = decoded;
+  console.log("🚀 ~ file: entryRoute.ts:87 ~ email:", email);
   const waitingVerifyObject = await WaitingVerify.findOne({ email })
   console.log("🚀 ~ file: entryRoute.ts:86 ~ waitingVerifyObject:", waitingVerifyObject);
 
@@ -103,16 +106,19 @@ router.get('/verify-sign-in', async (req: Request, res: Response) => {
 router.delete('/delete-account', async (req, res) => {
   const authHeader = req.headers.authorization;
   const authToken = authHeader?.split(' ')[1];
+  console.log("🚀 ~ file: entryRoute.ts:109 ~ authToken:", authToken);
   if (!authToken) {
     return res.status(400).json('No Token');
   }
   try {
     const decoded = await verifyToken(authToken);
+    console.log("🚀 ~ file: entryRoute.ts:115 ~ decoded:", decoded);
     const { userId } = decoded as DecodedAuth;
     await UserDeletion.create({ userId: userId });
     await User.findOneAndUpdate({ _id: userId }, { willBeDeleted: true });
     return res.status(202).json({ message: "Success" });
   } catch (error) {
+    console.log("🚀 ~ file: entryRoute.ts:121 ~ error:", error);
     console.error(error)
   }
 

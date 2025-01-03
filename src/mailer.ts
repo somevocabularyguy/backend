@@ -12,6 +12,7 @@ const client = mailgun.client({
 
 const sendMagicLinkEmail = async (email: string) => {
   const magicLink = generateMagicLink(email);
+  console.log("🚀 ~ file: mailer.ts:15 ~ magicLink:", magicLink);
 
   const messageText = `Hi,
 
