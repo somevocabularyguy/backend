@@ -78,4 +78,25 @@ router.post(`/sync-user-data`, async (req: Request, res: Response) => {
   }
 }); 
 
+router.delete(`/delete-progress-data`, async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const authToken = authHeader?.split(' ')[1];
+  console.log("🚀 ~ file: dataRoute.ts:36 ~ authToken:", authToken);
+
+  if (!authToken)  {
+    return res.status(401).json(null)
+  }
+  const decoded = await verifyToken(authToken);
+  console.log("🚀 ~ file: dataRoute.ts:42 ~ decoded:", decoded);
+  const { userId } = decoded as DecodedAuth;
+
+  try {
+    await UserData.updateOne({ userId: userId }, { $set: { userUseTime: 0, wordsData: [] } })
+    return res.status(202).json({ message: "Success" });
+  } catch (error) {
+    console.log("🚀 ~ file: dataRoute.ts:72 ~ error:", error);
+    throw new CustomError(500, 'Database Error')
+  }
+}); 
+
 export default router;

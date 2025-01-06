@@ -3,6 +3,8 @@ import formData from 'form-data';
 import { generateMagicLink } from './utils';
 import { CustomError } from '@/errorTypes';
 
+console.log("🚀 ~ file: mailer.ts:12 ~ process.env.MAILGUN_API_KEY :", process.env.MAILGUN_API_KEY );
+
 const mailgun = new Mailgun(formData);
 const client = mailgun.client({
   username: 'api',
@@ -37,7 +39,7 @@ const sendMagicLinkEmail = async (email: string) => {
     to: email,
     subject: 'Your Sign In Link',
     text: messageText,
-    // html: messageHtml
+    html: messageHtml
   };
 
   try {

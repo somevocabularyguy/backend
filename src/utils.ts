@@ -67,8 +67,8 @@ const isTokenExpired = (token: string) => {
 const compareUserData = (clientUseTime?: number | null, serverUseTime?: number | null) => {
   console.log("🚀 ~ file: utils.ts:68 ~ serverUseTime:", serverUseTime);
   console.log("🚀 ~ file: utils.ts:68 ~ clientUseTime:", clientUseTime);
-  if (!clientUseTime) return 'server';
-  if (!serverUseTime) return 'client';
+  if (!clientUseTime && clientUseTime !== 0) return 'server';
+  if (!serverUseTime && serverUseTime !== 0) return 'client';
   if (clientUseTime >= serverUseTime) {
     return 'client';
   } else {
